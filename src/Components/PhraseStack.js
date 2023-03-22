@@ -1,6 +1,8 @@
 import * as React from 'react';
 import {
   Box,
+  LinearProgress,
+  Paper,
   Stack,
   Typography,
 } from '@mui/material';
@@ -27,6 +29,16 @@ export default function PhraseStack({ phrases }) {
       </Item>
     : phrases.map((phrase, ind) => <div key={ind}>{phrase}</div>);
   return <Box sx={{ width: '100%' }}>
-    <Stack spacing={2}>{contents}</Stack>
+    <Paper square sx={{ position: 'sticky', top: 0, zIndex: 1000 }}>
+      <Box padding={2} sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ width: '100%', mr: 1 }}>
+          <LinearProgress variant="determinate" value={100.0*phrases.length/1000} />
+        </Box>
+        <Box sx={{ minWidth: 35 }}>
+          <Typography variant="body2" color="text.secondary">{`${phrases.length}/1000`}</Typography>
+        </Box>
+      </Box>
+    </Paper>
+    <Stack spacing={2} padding={1}>{contents}</Stack>
   </Box>;
 };
