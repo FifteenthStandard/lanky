@@ -52,12 +52,16 @@ export default function PhraseCard({ source, target, transliteration, metadata, 
   const [editTarget, setEditTarget] = useState(target);
   const [editTransliteration, setEditTransliteration] = useState(transliteration);
 
-  const disableSubmit = !editSource && !editTarget && !editTransliteration;
+  const disableSubmit = !editSource;
 
   const submit = function (ev) {
     ev.preventDefault();
     if (disableSubmit) return;
-    editPhrase({ source: editSource, target: editTarget, transliteration: editTransliteration });
+    try {
+      editPhrase({ source: editSource, target: editTarget, transliteration: editTransliteration });
+    } catch {
+      return;
+    }
     setEditPhraseOpen(false);
   };
 
@@ -115,6 +119,7 @@ export default function PhraseCard({ source, target, transliteration, metadata, 
         <form onSubmit={submit}>
           <TextField
             label={metadata.source}
+            required
             fullWidth
             sx={theme => ({ paddingBlock: theme.spacing(1) })}
             value={editSource}

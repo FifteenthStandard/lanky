@@ -18,12 +18,16 @@ export default function Actions({ metadata, addPhrase }) {
   const [target, setTarget] = useState('');
   const [transliteration, setTransliteration] = useState('');
 
-  const disableSubmit = !source && !target && !transliteration;
+  const disableSubmit = !source;
 
   const submit = function (ev) {
     ev.preventDefault();
     if (disableSubmit) return;
-    addPhrase({ source: source, target: target, transliteration: transliteration });
+    try {
+      addPhrase({ source: source, target: target, transliteration: transliteration });
+    } catch {
+      return;
+    }
     setAddPhraseOpen(false);
     setSource('');
     setTarget('');
@@ -43,6 +47,7 @@ export default function Actions({ metadata, addPhrase }) {
         <form onSubmit={submit}>
           <TextField
             label={metadata.source}
+            required
             fullWidth
             sx={theme => ({ paddingBlock: theme.spacing(1) })}
             value={source}
