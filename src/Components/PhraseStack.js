@@ -100,7 +100,12 @@ export default function PhraseStack({ phrases }) {
     <Paper square sx={{ position: 'sticky', top: 0, zIndex: 1000 }}>
       <Box padding={2} sx={{ display: 'flex', alignItems: 'center' }}>
         <Box sx={{ width: '100%', mr: 1 }}>
-          <LinearProgress variant="determinate" value={100.0*phrases.length/1000} />
+          <LinearProgress
+            variant="buffer"
+            value={100.0*phrases.filter(phrase => phrase.props.target).length/1000}
+            valueBuffer={100.0*phrases.length/1000}
+            sx={{ '&>*:first-of-type': { animation: 'none' } }}
+          />
         </Box>
         <Box sx={{ minWidth: 35 }}>
           <Typography variant="body2" color="text.secondary">{`${phrases.length}/1000`}</Typography>
