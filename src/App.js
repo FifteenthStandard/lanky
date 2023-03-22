@@ -62,7 +62,7 @@ export default function App() {
     setPhrases(phrases => phrases.appended(phrase).sorted())
   };
   const editPhrase = ind => phrase => {
-    if (phrases.some(p => p.source.toLowerCase() === phrase.source.toLowerCase())) throw new Error('Phrase already exists');
+    if (phrases.removedAt(ind).some(p => p.source.toLowerCase() === phrase.source.toLowerCase())) throw new Error('Phrase already exists');
     setPhrases(phrases => phrases.replacedAt(ind, phrase).sorted());
   };
   const deletePhrase = ind => () => setPhrases(phrases => phrases.removedAt(ind).sorted());
