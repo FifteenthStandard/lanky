@@ -65,22 +65,39 @@ export default function PhraseCard({ source, target, transliteration, metadata, 
     setEditPhraseOpen(false);
   };
 
+  const setClipboard = function (ev) {
+    navigator.clipboard.writeText(ev.target.innerText);
+  };
+
   return <>
     <Card>
       <Box sx={{ minWidth: 275, display: 'flex' }}>
         <Box sx={{ width: '50%', display: 'flex', flexDirection: 'column' }}>
           <CardContent sx={{ flex: '1 0 auto' }}>
-            <Typography variant="h5" component="div" sx={{ height: '100%', display: 'flex', alignItems: 'center' }}>
+            <Typography
+              variant="h5" component="div"
+              sx={{ height: '100%', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+              onClick={setClipboard}
+            >
               {source}
             </Typography>
           </CardContent>
         </Box>
         <Box sx={{ width: '50%', display: 'flex', flexDirection: 'column' }}>
           <CardContent sx={{ flex: '1 0 auto' }}>
-            <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            <Typography
+              sx={{ fontSize: 14, cursor: 'pointer' }}
+              color="text.secondary"
+              gutterBottom
+              onClick={setClipboard}
+            >
               {transliteration}
             </Typography>
-            <Typography variant="h5" component="div">
+            <Typography
+              variant="h5" component="div"
+              sx={{ cursor: 'pointer' }}
+              onClick={setClipboard}
+            >
               {target}
             </Typography>
           </CardContent>
