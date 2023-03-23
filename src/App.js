@@ -70,6 +70,7 @@ export default function App() {
   const phraseCards = phrases.map(
     (phrase, ind) =>
       <PhraseCard
+        key={phrase.source}
         metadata={metadata}
         editPhrase={editPhrase(ind)}
         deletePhrase={deletePhrase(ind)}

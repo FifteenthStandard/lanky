@@ -95,7 +95,7 @@ export default function PhraseStack({ phrases }) {
           Try adding a phrase from the floating action button below
         </Typography>
       </Item>
-    : filteredPhrases.map((phrase, ind) => <div key={ind}>{phrase}</div>);
+    : filteredPhrases;
   return <Box sx={{ width: '100%' }}>
     <Paper square sx={{ position: 'sticky', top: 0, zIndex: 1000 }}>
       <Box padding={2} sx={{ display: 'flex', alignItems: 'center' }}>
