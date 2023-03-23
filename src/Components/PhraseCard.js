@@ -65,6 +65,8 @@ export default function PhraseCard({ source, target, transliteration, metadata, 
     setEditPhraseOpen(false);
   };
 
+  const [deleteOpen, setDeleteOpen] = useState(false);
+
   const setClipboard = function (ev) {
     navigator.clipboard.writeText(ev.target.innerText);
   };
@@ -126,7 +128,7 @@ export default function PhraseCard({ source, target, transliteration, metadata, 
         <ListItemIcon><Edit /></ListItemIcon>
         <ListItemText>Edit</ListItemText>
       </MenuItem>
-      <MenuItem onClick={deletePhrase}>
+      <MenuItem onClick={() => { setDeleteOpen(true); setAnchorEl(null); }}>
         <ListItemIcon><Delete /></ListItemIcon>
         <ListItemText>Delete</ListItemText>
       </MenuItem>
@@ -159,6 +161,55 @@ export default function PhraseCard({ source, target, transliteration, metadata, 
           <Button fullWidth variant="contained" onClick={submit} disabled={disableSubmit} >Edit Phrase</Button>
           <input type="submit" hidden />
         </form>
+      </Paper>
+    </Modal>
+    <Modal open={deleteOpen} onClose={() => setDeleteOpen(false)}>
+      <Paper sx={{ width: '80vw', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', p: 4 }}>
+        <Typography variant="h5">Delete phrase</Typography>
+        <Typography>Are you sure you want to delete this phrase? This action is irreversible.</Typography>
+        <Box sx={{ minWidth: 275, display: 'flex' }}>
+          <Box sx={{ width: '50%', display: 'flex', flexDirection: 'column' }}>
+            <CardContent sx={{ flex: '1 0 auto' }}>
+              <Typography
+                variant="h5" component="div"
+                sx={{ height: '100%', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+              >
+                {source}
+              </Typography>
+            </CardContent>
+          </Box>
+          <Box sx={{ width: '50%', display: 'flex', flexDirection: 'column' }}>
+            <CardContent sx={{ flex: '1 0 auto' }}>
+              <Typography
+                sx={{ fontSize: 14, cursor: 'pointer' }}
+                color="text.secondary"
+                gutterBottom
+              >
+                {transliteration}
+              </Typography>
+              <Typography
+                variant="h5" component="div"
+                sx={{ cursor: 'pointer' }}
+              >
+                {target}
+              </Typography>
+            </CardContent>
+          </Box>
+        </Box>
+        <Box sx={{display: 'flex'}}>
+          <Box>
+            <Button variant="outlined" onClick={() => setDeleteOpen(false)}>Cancel</Button>
+          </Box>
+          <Box sx={{ flex: '1 0 auto', textAlign: 'right' }}>
+            <Button
+              variant="contained" color="error"
+              startIcon={<Delete />}
+              onClick={deletePhrase}
+            >
+              Permanently delete
+            </Button>
+          </Box>
+        </Box>
       </Paper>
     </Modal>
   </>;
