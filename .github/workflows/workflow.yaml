@@ -27,6 +27,8 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
+      - name: Copy Index to Quiz
+        run: cp build/index.html build/quiz.html
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v2
       - name: Upload GitHub Pages artifact

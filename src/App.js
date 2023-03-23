@@ -2,12 +2,16 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import {
+  BrowserRouter,
+  Route,
+  Routes,
+} from 'react-router-dom';
 
 import {
-  Actions,
-  PhraseCard,
-  PhraseStack,
-} from './Components';
+  Home,
+  Quiz,
+ } from './Components';
 
 /* eslint-disable no-extend-native */
 Array.prototype.sorted = function () {
@@ -67,19 +71,10 @@ export default function App() {
   };
   const deletePhrase = ind => () => setPhrases(phrases => phrases.removedAt(ind).sorted());
 
-  const phraseCards = phrases.map(
-    (phrase, ind) =>
-      <PhraseCard
-        key={phrase.source}
-        metadata={metadata}
-        editPhrase={editPhrase(ind)}
-        deletePhrase={deletePhrase(ind)}
-        {...phrase}
-      />
-    );
-
-  return <>
-    <PhraseStack phrases={phraseCards}/>
-    <Actions metadata={metadata} addPhrase={addPhrase} />
-  </>;
+  return <BrowserRouter basename="/lanky">
+    <Routes>
+      <Route path="/" element={<Home {...{metadata, phrases, addPhrase, editPhrase, deletePhrase }} />} />
+      <Route path="/quiz" element={<Quiz {...{metadata, phrases}} />} />
+    </Routes>
+  </BrowserRouter>;
 }

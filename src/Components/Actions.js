@@ -5,11 +5,14 @@ import {
   Button,
   Modal,
   Paper,
-  Fab,
+  SpeedDial,
+  SpeedDialAction,
+  SpeedDialIcon,
   TextField,
 } from '@mui/material';
 import {
-  Add,
+  AddComment,
+  Quiz,
 } from '@mui/icons-material';
 
 export default function Actions({ metadata, addPhrase }) {
@@ -35,13 +38,24 @@ export default function Actions({ metadata, addPhrase }) {
   };
 
   return <>
-    <Fab
-      color="primary"
+    <SpeedDial
+      ariaLabel="Speed Dial"
+      icon={<SpeedDialIcon />}
       sx={{ position: 'fixed', bottom: 16, right: 16 }}
-      onClick={() => setAddPhraseOpen(true)}
     >
-      <Add />
-    </Fab>
+      <SpeedDialAction
+        icon={<AddComment />}
+        tooltipTitle="Add&nbsp;Phrase"
+        tooltipOpen={true}
+        onClick={() => setAddPhraseOpen(true)}
+      />
+      <SpeedDialAction
+        icon={<Quiz />}
+        tooltipTitle="Quiz"
+        tooltipOpen={true}
+        onClick={() => window.location = '/lanky/quiz'}
+      />
+    </SpeedDial>
     <Modal open={addPhraseOpen} onClose={() => setAddPhraseOpen(false)}>
       <Paper sx={{ width: '80vw', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', p: 4 }}>
         <form onSubmit={submit}>
