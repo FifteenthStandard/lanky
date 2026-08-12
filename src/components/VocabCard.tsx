@@ -1,19 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
+  Button,
   Card,
   CardActionArea,
   CardActions,
   CardContent,
   Divider,
-  IconButton,
   Stack,
   Typography,
 } from '@mui/material';
-import {
-  Delete,
-  Edit,
-  ExpandLess,
-} from '@mui/icons-material';
 import { useVocabDispatch } from '../contexts'
 import type { Vocab } from '../types';
 
@@ -22,8 +17,16 @@ export default function VocabCard({ vocab }: { vocab: Vocab }) {
 
   const [ expanded, setExpanded ] = useState(false);
 
+  useEffect(() => {
+    if (expanded) {
+      window.addEventListener('scroll', handle);
+      return () => window.removeEventListener('scroll', handle);
+    }
+    function handle() { setExpanded(false); }
+  }, [ expanded ]);
+
   function handleClickCard() {
-    setExpanded(true);
+    setExpanded(!expanded);
   };
 
   function handleClickEdit() {
@@ -32,10 +35,6 @@ export default function VocabCard({ vocab }: { vocab: Vocab }) {
 
   function handleClickDelete() {
     dispatch.requestDelete(vocab);
-  };
-
-  function handleClickCollapse() {
-    setExpanded(false);
   };
 
   return (
@@ -53,19 +52,14 @@ export default function VocabCard({ vocab }: { vocab: Vocab }) {
           </CardContent>
         </Stack>
       </CardActionArea>
-      {expanded && (
-        <CardActions disableSpacing>
-          <IconButton onClick={handleClickEdit}>
-            <Edit />
-          </IconButton>
-          <IconButton onClick={handleClickDelete}>
-            <Delete />
-          </IconButton>
-          <IconButton sx={{ ml: 'auto' }} onClick={handleClickCollapse}>
-            <ExpandLess />
-          </IconButton>
-        </CardActions>
-      )}
+      <Divider orientation="horizontal" />
+      <CardActions sx={{ p: 0, transition: 'max-height 0.2s ease-in-out', overflowY: 'hidden', maxHeight: expanded ? '100px' : '0px' }}>
+        <Stack direction="row" sx={{ width: '100%' }}>
+          <Button onClick={handleClickEdit} fullWidth>Edit</Button>
+          <Divider orientation="vertical" flexItem />
+          <Button onClick={handleClickDelete} fullWidth color="error">Delete</Button>
+        </Stack>
+      </CardActions>
     </Card>
   );
 };

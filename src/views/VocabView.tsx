@@ -17,7 +17,7 @@ export default function VocabView(): React.ReactElement {
   const filteredVocab = useMemo(() => filterVocab(vocab, filter), [ vocab, filter ]);
 
   return (
-    <Stack spacing={2} sx={{ pb: '72px' }}>
+    <Stack spacing={2} sx={{ pb: '120px' }}>
       <FilterBar value={filter} onChange={setFilter} />
       { !loaded
         ? <SkeletonVocabList />

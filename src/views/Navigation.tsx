@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
+  Badge,
   BottomNavigation,
   BottomNavigationAction,
 } from '@mui/material';
@@ -7,10 +8,13 @@ import {
   FactCheck,
   Translate,
 } from '@mui/icons-material';
+import { useVocab } from '../contexts';
 
 export default function Navigation(): React.ReactElement {
   const location = useLocation();
   const navigate = useNavigate();
+  const vocab = useVocab();
+
   const selectedTab = location.pathname;
 
   function handleChange(_: React.SyntheticEvent, newValue: string): void {
@@ -31,7 +35,7 @@ export default function Navigation(): React.ReactElement {
     >
       <BottomNavigationAction
         label="List"
-        icon={<Translate />}
+        icon={<Badge badgeContent={vocab.vocab.length} color="primary"><Translate /></Badge>}
         value="/"
       />
       <BottomNavigationAction
