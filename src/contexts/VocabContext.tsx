@@ -150,7 +150,7 @@ export function VocabProvider({ children }: { children: React.ReactNode }): Reac
     dispatch({ type: 'UPDATE_VOCAB', payload: vocab });
     storageClient.saveVocab(vocab).then(() => {
       toastDispatch.addToast({
-        message: `Updated "${vocab.english}" successfully`,
+        message: `Updated "${vocab.english}"`,
         severity: 'success',
       });
     }).catch(() => {
@@ -165,7 +165,7 @@ export function VocabProvider({ children }: { children: React.ReactNode }): Reac
     dispatch({ type: 'DELETE_VOCAB', id: vocab.id });
     storageClient.deleteVocab(vocab).catch(() => {
       toastDispatch.addToast({
-        message: `Failed to delete vocab with id "${vocab.id}". Please try again.`,
+        message: `Failed to delete "${vocab.english}", please try again`,
         severity: 'error',
       });
     });
@@ -290,7 +290,7 @@ function AddVocabDialog({
             margin="normal"
           />
           <TextField
-            label="Cantonese"
+            label="中文"
             value={cantonese}
             onChange={(e) => setCantonese(e.target.value)}
             fullWidth
@@ -413,7 +413,7 @@ function UpdateVocabDialog({
             margin="normal"
           />
           <TextField
-            label="Cantonese"
+            label="中文"
             value={cantonese}
             onChange={(e) => setCantonese(e.target.value)}
             fullWidth
