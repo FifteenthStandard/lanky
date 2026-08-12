@@ -5,8 +5,12 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  IconButton,
   TextField,
 } from '@mui/material';
+import {
+  Close,
+} from '@mui/icons-material';
 import { useGemini, useGeminiDispatch, useToastDispatch } from '.';
 import { storageClient, suggestTranslation } from '../clients';
 import type { Vocab, VocabDetails, VocabDispatch, VocabLibrary } from '../types';
@@ -269,7 +273,12 @@ function AddVocabDialog({
       fullScreen={window.innerWidth < 600}
     >
       <form onSubmit={handleSubmit}>
-        <DialogTitle>Add a Word</DialogTitle>
+        <DialogTitle>
+          Add a Word
+          <IconButton onClick={handleClose} color="inherit" sx={{ position: 'absolute', right: 8, top: 8 }}>
+            <Close />
+          </IconButton>
+        </DialogTitle>
         <DialogContent>
           <TextField
             label="English"
@@ -302,9 +311,8 @@ function AddVocabDialog({
             margin="normal"
           />
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ p: 3, justifyContent: 'space-between' }}>
           <Button onClick={handleSuggestTranslation} loading={suggestionLoading} disabled={!english}>Suggest Translation</Button>
-          <Button onClick={handleClose}>Cancel</Button>
           <Button type="submit" variant="contained" color="primary">
             Add
           </Button>
@@ -323,10 +331,14 @@ function UpdateVocabDialog({
   onSubmit: (vocab: Vocab) => void,
   onClose: () => void,
 }): React.ReactElement {
+  const apiKey = useGemini();
+  const renewApiKey = useGeminiDispatch();
+
   const [ english, setEnglish ] = useState('');
   const [ cantonese, setCantonese ] = useState('');
   const [ pinyin, setPinyin ] = useState('');
   const [ jyutping, setJyutping ] = useState('');
+  const [ suggestionLoading, setSuggestionLoading ] = useState(false);
 
   useEffect(() => {
     if (vocab) {
@@ -364,6 +376,19 @@ function UpdateVocabDialog({
     onClose();
   };
 
+  async function handleSuggestTranslation() {
+    setSuggestionLoading(true);
+    try {
+      const translation = await suggestTranslation(apiKey, english, renewApiKey);
+      console.log(translation);
+      setCantonese(translation.hanzi || '');
+      setJyutping(translation.jyutping || '');
+      setPinyin(translation.pinyin || '');
+    } finally {
+      setSuggestionLoading(false);
+    }
+  };
+
   return (
     <Dialog
       open={vocab !== null}
@@ -371,7 +396,12 @@ function UpdateVocabDialog({
       fullScreen={window.innerWidth < 600}
     >
       <form onSubmit={handleSubmit}>
-        <DialogTitle>Edit Word</DialogTitle>
+        <DialogTitle>
+          Edit Word
+          <IconButton onClick={handleClose} color="inherit" sx={{ position: 'absolute', right: 8, top: 8 }}>
+            <Close />
+          </IconButton>
+        </DialogTitle>
         <DialogContent>
           <TextField
             label="English"
@@ -404,10 +434,10 @@ function UpdateVocabDialog({
             margin="normal"
           />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
+        <DialogActions sx={{ p: 3, justifyContent: 'space-between' }}>
+          <Button onClick={handleSuggestTranslation} loading={suggestionLoading} disabled={!english}>Suggest Translation</Button>
           <Button type="submit" variant="contained" color="primary">
-            Update
+            Save
           </Button>
         </DialogActions>
       </form>
@@ -442,16 +472,21 @@ function DeleteVocabDialog({
       fullScreen={window.innerWidth < 600}
     >
       <form onSubmit={handleSubmit}>
-      <DialogTitle>Delete Word</DialogTitle>
-      <DialogContent>
-        Are you sure you want to delete "{vocab?.english}"? This action cannot be undone.
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button type="submit" variant="contained" color="error">
-          Delete
-        </Button>
-      </DialogActions>
+        <DialogTitle>
+          Delete Word
+          <IconButton onClick={handleClose} color="inherit" sx={{ position: 'absolute', right: 8, top: 8 }}>
+            <Close />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete "{vocab?.english}"? This action cannot be undone.
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button type="submit" variant="contained" color="error">
+            Delete
+          </Button>
+        </DialogActions>
       </form>
     </Dialog>
   );
