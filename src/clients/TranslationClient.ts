@@ -15,8 +15,8 @@ async function suggestTranslationInner(apiKey: string, englishText: string): Pro
     You are a Cantonese translation assistant for Guangzhou Cantonese.
     Translate the following English term into:
     1. Simplified Hanzi
-    2. Jyutping
-    3. Raw keyboard Pinyin (no tone marks/accents)
+    2. Jyutping (include tone numbers, space-separated per character)
+    3. Raw keyboard Pinyin (no tone marks/accents, space-separated per character)
 
     Text: "${englishText}"
     Return strictly JSON with keys: hanzi, jyutping, pinyin.
