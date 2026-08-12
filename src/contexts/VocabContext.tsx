@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Button,
   Dialog,
@@ -88,11 +89,14 @@ function reduce(state: VocabLibrary, action: VocabAction): VocabLibrary {
 
 export function VocabProvider({ children }: { children: React.ReactNode }): React.ReactElement {
   const toastDispatch = useToastDispatch();
+  const [ searchParams, setSearchParams ] = useSearchParams();
+
+  const dialog = searchParams.get('dialog');
 
   const [ state, dispatch ] = useReducer(reduce, initialState);
-  const [ addVocabDialogOpen, setAddVocabDialogOpen ] = useState(false);
-  const [ selectedUpdateVocab, setSelectedUpdateVocab ] = useState<Vocab | null>(null);
-  const [ selectedDeleteVocab, setSelectedDeleteVocab ] = useState<Vocab | null>(null);
+  const addVocabDialogOpen = dialog === 'add';
+  const selectedUpdateVocab = dialog === 'update' ? getVocabFromSearchParams(searchParams) : undefined;
+  const selectedDeleteVocab = dialog === 'delete' ? getVocabFromSearchParams(searchParams) : undefined;
 
   useEffect(() => {
     (async function initialize() {
@@ -110,15 +114,15 @@ export function VocabProvider({ children }: { children: React.ReactNode }): Reac
   }, []);
 
   const requestAdd = useCallback(() => {
-    setAddVocabDialogOpen(true);
+    setSearchParams({ 'dialog': 'add' });
   }, []);
 
   const requestUpdate = useCallback((vocab: Vocab) => {
-    setSelectedUpdateVocab(vocab);
+    setSearchParams({ 'dialog': 'update', ...vocab });
   }, []);
 
   const requestDelete = useCallback((vocab: Vocab) => {
-    setSelectedDeleteVocab(vocab);
+    setSearchParams({ 'dialog': 'delete', ...vocab });
   }, []);
 
   const vocabDispatch: VocabDispatch = useMemo(() => ({
@@ -128,6 +132,7 @@ export function VocabProvider({ children }: { children: React.ReactNode }): Reac
   }), [ requestAdd, requestUpdate, requestDelete ]);
 
   const onSubmitAddVocab = useCallback((vocabDetails: VocabDetails) => {
+    setSearchParams({});
     const newVocab: Vocab = {
       ...vocabDetails,
       id: new Date().toISOString(),
@@ -146,7 +151,12 @@ export function VocabProvider({ children }: { children: React.ReactNode }): Reac
     });
   }, []);
 
+  const onCloseAddVocab = useCallback(() => {
+    setSearchParams({});
+  }, []);
+
   const onSubmitUpdateVocab = useCallback((vocab: Vocab) => {
+    setSearchParams({});
     dispatch({ type: 'UPDATE_VOCAB', payload: vocab });
     storageClient.saveVocab(vocab).then(() => {
       toastDispatch.addToast({
@@ -161,7 +171,12 @@ export function VocabProvider({ children }: { children: React.ReactNode }): Reac
     });
   }, []);
 
+  const onCloseUpdateVocab = useCallback(() => {
+    setSearchParams({});
+  }, []);
+
   const onSubmitDeleteVocab = useCallback((vocab: Vocab) => {
+    setSearchParams({});
     dispatch({ type: 'DELETE_VOCAB', id: vocab.id });
     storageClient.deleteVocab(vocab).catch(() => {
       toastDispatch.addToast({
@@ -171,23 +186,27 @@ export function VocabProvider({ children }: { children: React.ReactNode }): Reac
     });
   }, []);
 
+  const onCloseDeleteVocab = useCallback(() => {
+    setSearchParams({});
+  }, []);
+
   return (
     <VocabContext.Provider value={state}>
       <VocabDispatchContext.Provider value={vocabDispatch}>
         <AddVocabDialog
           open={addVocabDialogOpen}
           onSubmit={onSubmitAddVocab}
-          onClose={() => setAddVocabDialogOpen(false)}
+          onClose={onCloseAddVocab}
         />
         <UpdateVocabDialog
           vocab={selectedUpdateVocab}
           onSubmit={onSubmitUpdateVocab}
-          onClose={() => setSelectedUpdateVocab(null)}
+          onClose={onCloseUpdateVocab}
         />
         <DeleteVocabDialog
           vocab={selectedDeleteVocab}
           onSubmit={onSubmitDeleteVocab}
-          onClose={() => setSelectedDeleteVocab(null)}
+          onClose={onCloseDeleteVocab}
         />
         {children}
       </VocabDispatchContext.Provider>
@@ -271,6 +290,7 @@ function AddVocabDialog({
       open={open}
       onClose={handleClose}
       fullScreen={window.innerWidth < 600}
+      disableRestoreFocus
     >
       <form onSubmit={handleSubmit}>
         <DialogTitle>
@@ -288,6 +308,14 @@ function AddVocabDialog({
             autoFocus
             fullWidth
             margin="normal"
+            slotProps={{
+              htmlInput: {
+                autoCapitalize: 'off',
+                autoComplete: 'off',
+                lang: 'en',
+                spellCheck: 'false'
+              }
+            }}
           />
           <TextField
             label="中文"
@@ -295,6 +323,14 @@ function AddVocabDialog({
             onChange={(e) => setCantonese(e.target.value)}
             fullWidth
             margin="normal"
+            slotProps={{
+              htmlInput: {
+                autoCapitalize: 'off',
+                autoComplete: 'off',
+                lang: 'zh-CN',
+                spellCheck: 'false'
+              }
+            }}
           />
           <TextField
             label="Pinyin"
@@ -302,6 +338,13 @@ function AddVocabDialog({
             onChange={(e) => setPinyin(e.target.value)}
             fullWidth
             margin="normal"
+            slotProps={{
+              htmlInput: {
+                autoCapitalize: 'off',
+                autoComplete: 'off',
+                spellCheck: 'false'
+              }
+            }}
           />
           <TextField
             label="Jyutping"
@@ -309,6 +352,13 @@ function AddVocabDialog({
             onChange={(e) => setJyutping(e.target.value)}
             fullWidth
             margin="normal"
+            slotProps={{
+              htmlInput: {
+                autoCapitalize: 'off',
+                autoComplete: 'off',
+                spellCheck: 'false'
+              }
+            }}
           />
         </DialogContent>
         <DialogActions sx={{ p: 3, justifyContent: 'space-between' }}>
@@ -327,7 +377,7 @@ function UpdateVocabDialog({
   onSubmit,
   onClose,
 }: {
-  vocab: Vocab | null,
+  vocab: Vocab | undefined,
   onSubmit: (vocab: Vocab) => void,
   onClose: () => void,
 }): React.ReactElement {
@@ -391,9 +441,10 @@ function UpdateVocabDialog({
 
   return (
     <Dialog
-      open={vocab !== null}
+      open={vocab !== undefined}
       onClose={handleClose}
       fullScreen={window.innerWidth < 600}
+      disableRestoreFocus
     >
       <form onSubmit={handleSubmit}>
         <DialogTitle>
@@ -411,6 +462,14 @@ function UpdateVocabDialog({
             autoFocus
             fullWidth
             margin="normal"
+            slotProps={{
+              htmlInput: {
+                autoCapitalize: 'off',
+                autoComplete: 'off',
+                lang: 'en',
+                spellCheck: 'false'
+              }
+            }}
           />
           <TextField
             label="中文"
@@ -418,6 +477,14 @@ function UpdateVocabDialog({
             onChange={(e) => setCantonese(e.target.value)}
             fullWidth
             margin="normal"
+            slotProps={{
+              htmlInput: {
+                autoCapitalize: 'off',
+                autoComplete: 'off',
+                lang: 'zh-CN',
+                spellCheck: 'false'
+              }
+            }}
           />
           <TextField
             label="Pinyin"
@@ -425,6 +492,13 @@ function UpdateVocabDialog({
             onChange={(e) => setPinyin(e.target.value)}
             fullWidth
             margin="normal"
+            slotProps={{
+              htmlInput: {
+                autoCapitalize: 'off',
+                autoComplete: 'off',
+                spellCheck: 'false'
+              }
+            }}
           />
           <TextField
             label="Jyutping"
@@ -432,6 +506,13 @@ function UpdateVocabDialog({
             onChange={(e) => setJyutping(e.target.value)}
             fullWidth
             margin="normal"
+            slotProps={{
+              htmlInput: {
+                autoCapitalize: 'off',
+                autoComplete: 'off',
+                spellCheck: 'false'
+              }
+            }}
           />
         </DialogContent>
         <DialogActions sx={{ p: 3, justifyContent: 'space-between' }}>
@@ -450,7 +531,7 @@ function DeleteVocabDialog({
   onSubmit,
   onClose,
 }: {
-  vocab: Vocab | null,
+  vocab: Vocab | undefined,
   onSubmit: (vocab: Vocab) => void,
   onClose: () => void,
 }): React.ReactElement {
@@ -467,7 +548,7 @@ function DeleteVocabDialog({
 
   return (
     <Dialog
-      open={vocab !== null}
+      open={vocab !== undefined}
       onClose={handleClose}
       fullScreen={window.innerWidth < 600}
     >
@@ -490,4 +571,14 @@ function DeleteVocabDialog({
       </form>
     </Dialog>
   );
+};
+
+function getVocabFromSearchParams(searchParams: URLSearchParams): Vocab {
+  return {
+    id: searchParams.get('id') || '',
+    english: searchParams.get('english') || '',
+    cantonese: searchParams.get('cantonese') || '',
+    pinyin: searchParams.get('pinyin') || '',
+    jyutping: searchParams.get('jyutping') || '',
+  }
 };

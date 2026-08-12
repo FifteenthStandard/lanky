@@ -29,7 +29,8 @@ self.addEventListener('fetch', (event) => {
     caches.match(event.request).then((cached) => {
       const fetchPromise = fetch(event.request).then((response) => {
         if (response.ok) {
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, response.clone()));
+          const cloned = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, cloned));
         }
         return response;
       });
