@@ -35,7 +35,7 @@ export default function Navigation(): React.ReactElement {
     >
       <BottomNavigationAction
         label="List"
-        icon={<Badge badgeContent={vocab.vocab.length} color="primary"><Translate /></Badge>}
+        icon={<Badge badgeContent={vocab.vocab.length} max={9999} color="primary"><Translate /></Badge>}
         value="/"
       />
       <BottomNavigationAction
