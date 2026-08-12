@@ -1,6 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
-  Badge,
   BottomNavigation,
   BottomNavigationAction,
 } from '@mui/material';
@@ -37,7 +36,7 @@ export default function Navigation(): React.ReactElement {
       />
       <BottomNavigationAction
         label="Test"
-        icon={<Badge badgeContent={4} max={99} color="primary"><FactCheck /></Badge>}
+        icon={<FactCheck />}
         value="/test"
       />
     </BottomNavigation>

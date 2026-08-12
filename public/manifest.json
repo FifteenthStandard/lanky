@@ -4,8 +4,8 @@
   "start_url": "/lanky/",
   "scope": "/lanky/",
   "display": "standalone",
-  "background_color": "#e7ebf0",
-  "theme_color": "#e7ebf0",
+  "background_color": "#f5f5f5",
+  "theme_color": "#f5f5f5",
   "icons": [
     {
       "src": "/lanky/favicon.svg",

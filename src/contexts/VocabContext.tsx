@@ -131,7 +131,7 @@ export function VocabProvider({ children }: { children: React.ReactNode }): Reac
     dispatch({ type: 'ADD_VOCAB', payload: newVocab });
     storageClient.saveVocab(newVocab).then(() => {
       toastDispatch.addToast({
-        message: `Added "${newVocab.english}" successfully`,
+        message: `Added "${newVocab.english}"`,
         severity: 'success',
       });
     }).catch(() => {
